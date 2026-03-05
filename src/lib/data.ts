@@ -4,18 +4,18 @@ export const EXPERIENCE: ExperienceEntry[] = [
   {
     company: "GLEB KOSTIN SOLUTIONS",
     period: "2023 — 2025",
-    role: "Head of Video Production",
+    role: "HEAD OF VIDEO PRODUCTION",
     description:
-      "Led end-to-end video production pipeline for a creative agency. Oversaw a team of editors and motion designers, established production standards, and delivered content across digital and broadcast channels.",
-    tools: ["After Effects", "Premiere Pro", "Cinema 4D", "DaVinci Resolve"],
+      "Full-cycle video production. Managed art direction, motion design, compositing, and 3D creation. Integrated Generative AI workflows for voiceovers and asset generation.",
+    tools: ["After Effects", "DaVinci Resolve Studio", "Premiere Pro", "Photoshop", "Generative AI"],
   },
   {
     company: "MIRAGE CINEMA",
     period: "2024 — 2026",
-    role: "Digital Experience Designer",
+    role: "DIGITAL EXPERIENCE DESIGNER",
     description:
-      "Designed and directed digital experiences at the intersection of cinema and interactive media. Developed visual identities, motion systems, and generative installations for brand activations.",
-    tools: ["TouchDesigner", "Stable Diffusion", "Blender", "GLSL", "Figma"],
+      "Curated digital atmosphere for cinema spaces. Created immersive motion graphics for digital columns and large-scale screens. Developed visual identities for film festivals and thematic events.",
+    tools: ["After Effects", "Generative AI", "Cinema 4D", "Blender"],
   },
 ];
 
