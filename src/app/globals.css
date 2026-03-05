@@ -1,26 +1,228 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ─── Theme tokens ──────────────────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: #000000;
+  --color-foreground: #ffffff;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --font-pixel: var(--font-press-start);
+  --font-mono: var(--font-space-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base reset ────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  cursor: none !important;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #000;
+  color: #fff;
+  font-family: var(--font-space-mono), "Courier New", monospace;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Custom cursor ─────────────────────────────────────────────────────── */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  pointer-events: none;
+  z-index: 9999;
+  image-rendering: pixelated;
+  will-change: transform;
+}
+
+.cursor--hover {
+  width: 24px;
+  height: 24px;
+}
+
+/* ─── ASCII art ─────────────────────────────────────────────────────────── */
+.ascii-art {
+  font-family: "Courier New", monospace;
+  white-space: pre;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─── Typography helpers ────────────────────────────────────────────────── */
+.font-pixel {
+  font-family: var(--font-press-start), monospace;
+}
+
+.font-mono-custom {
+  font-family: var(--font-space-mono), "Courier New", monospace;
+}
+
+/* ─── Glitch animation ──────────────────────────────────────────────────── */
+@keyframes glitch-after {
+  0%,
+  100% {
+    clip-path: inset(0 0 100% 0);
+    transform: translateX(0);
+  }
+  20% {
+    clip-path: inset(20% 0 60% 0);
+    transform: translateX(-4px);
+  }
+  40% {
+    clip-path: inset(50% 0 30% 0);
+    transform: translateX(4px);
+  }
+  60% {
+    clip-path: inset(80% 0 5% 0);
+    transform: translateX(-2px);
+  }
+  80% {
+    clip-path: inset(10% 0 75% 0);
+    transform: translateX(2px);
+  }
+}
+
+@keyframes glitch-before {
+  0%,
+  100% {
+    clip-path: inset(10% 0 85% 0);
+    transform: translateX(-3px);
+  }
+  33% {
+    clip-path: inset(60% 0 20% 0);
+    transform: translateX(3px);
+  }
+  66% {
+    clip-path: inset(30% 0 50% 0);
+    transform: translateX(-1px);
+  }
+}
+
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  color: #fff;
+  animation: glitch-before 2.5s infinite linear;
+  opacity: 0.8;
+}
+
+.glitch::after {
+  color: #fff;
+  animation: glitch-after 2.5s infinite linear 0.1s;
+  opacity: 0.6;
+}
+
+/* ─── Typewriter cursor blink ───────────────────────────────────────────── */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.typewriter-cursor::after {
+  content: "█";
+  animation: blink 1s step-end infinite;
+}
+
+/* ─── Scroll indicator bounce ───────────────────────────────────────────── */
+@keyframes bounce-down {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.bounce-down {
+  animation: bounce-down 1.2s ease-in-out infinite;
+}
+
+/* ─── Horizontal scroll track ───────────────────────────────────────────── */
+.h-scroll-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  will-change: transform;
+}
+
+/* ─── Section divider line ──────────────────────────────────────────────── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ─── Video card thumbnail/video swap ───────────────────────────────────── */
+.video-card__media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.video-card__thumb {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.3s ease;
+}
+
+.video-card__video {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-card:hover .video-card__thumb {
+  opacity: 0;
+}
+
+.video-card:hover .video-card__video {
+  opacity: 1;
+}
+
+/* ─── Noise overlay (subtle texture) ───────────────────────────────────── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.35;
 }
