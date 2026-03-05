@@ -4,9 +4,6 @@
 @theme inline {
   --color-background: #000000;
   --color-foreground: #ffffff;
-  --color-border: rgba(255, 255, 255, 0.12);
-  --font-pixel: var(--font-press-start);
-  --font-mono: var(--font-space-mono);
 }
 
 /* ─── Base reset ────────────────────────────────────────────────────────── */
@@ -26,142 +23,53 @@ html {
 body {
   background: #000;
   color: #fff;
-  font-family: var(--font-space-mono), "Courier New", monospace;
+  font-family: var(--font-grotesk), "Helvetica Neue", sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Custom cursor ─────────────────────────────────────────────────────── */
+/* ─── Typography helpers ────────────────────────────────────────────────── */
+.font-heading {
+  font-family: var(--font-anton), sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.font-body {
+  font-family: var(--font-grotesk), "Helvetica Neue", sans-serif;
+}
+
+/* ─── Custom cursor — small circle, mix-blend-mode difference ───────────── */
 .cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   background: #fff;
+  border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  image-rendering: pixelated;
+  mix-blend-mode: difference;
   will-change: transform;
+  transition: width 0.2s ease, height 0.2s ease;
 }
 
 .cursor--hover {
-  width: 20px;
-  height: 20px;
-}
-
-/* ─── ASCII art ─────────────────────────────────────────────────────────── */
-.ascii-art {
-  font-family: "Courier New", monospace;
-  white-space: pre;
-  line-height: 1.2;
-  color: rgba(255, 255, 255, 0.15);
-  pointer-events: none;
-  user-select: none;
-}
-
-/* ─── Typography helpers ────────────────────────────────────────────────── */
-.font-pixel {
-  font-family: var(--font-press-start), monospace;
-}
-
-.font-mono-custom {
-  font-family: var(--font-space-mono), "Courier New", monospace;
-}
-
-/* ─── Glitch animation ──────────────────────────────────────────────────── */
-@keyframes glitch-after {
-  0%,
-  100% {
-    clip-path: inset(0 0 100% 0);
-    transform: translateX(0);
-  }
-  20% {
-    clip-path: inset(20% 0 60% 0);
-    transform: translateX(-4px);
-  }
-  40% {
-    clip-path: inset(50% 0 30% 0);
-    transform: translateX(4px);
-  }
-  60% {
-    clip-path: inset(80% 0 5% 0);
-    transform: translateX(-2px);
-  }
-  80% {
-    clip-path: inset(10% 0 75% 0);
-    transform: translateX(2px);
-  }
-}
-
-@keyframes glitch-before {
-  0%,
-  100% {
-    clip-path: inset(10% 0 85% 0);
-    transform: translateX(-3px);
-  }
-  33% {
-    clip-path: inset(60% 0 20% 0);
-    transform: translateX(3px);
-  }
-  66% {
-    clip-path: inset(30% 0 50% 0);
-    transform: translateX(-1px);
-  }
-}
-
-.glitch {
-  position: relative;
-}
-
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.glitch::before {
-  color: #fff;
-  animation: glitch-before 2.5s infinite linear;
-  opacity: 0.8;
-}
-
-.glitch::after {
-  color: #fff;
-  animation: glitch-after 2.5s infinite linear 0.1s;
-  opacity: 0.6;
-}
-
-/* ─── Typewriter cursor blink ───────────────────────────────────────────── */
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-
-.typewriter-cursor::after {
-  content: "█";
-  animation: blink 1s step-end infinite;
+  width: 32px;
+  height: 32px;
 }
 
 /* ─── Scroll indicator pulse ────────────────────────────────────────────── */
 @keyframes pulse-scroll {
   0%,
   100% {
-    opacity: 0.5;
+    opacity: 0.4;
     transform: translateY(0);
   }
   50% {
-    opacity: 1;
-    transform: translateY(5px);
+    opacity: 0.9;
+    transform: translateY(6px);
   }
 }
 
@@ -169,53 +77,33 @@ body {
   animation: pulse-scroll 1.8s ease-in-out infinite;
 }
 
-/* kept for backwards compat */
-@keyframes bounce-down {
-  0%,
-  100% { transform: translateY(0); }
-  50%  { transform: translateY(6px); }
-}
-.bounce-down {
-  animation: bounce-down 1.2s ease-in-out infinite;
+/* ─── Section divider ───────────────────────────────────────────────────── */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: #222;
+  margin: 80px 0;
 }
 
 /* ─── Portfolio horizontal scroll lane ──────────────────────────────────── */
 .portfolio-scroll {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-color: #fff #111;
 }
 
 .portfolio-scroll::-webkit-scrollbar {
-  height: 2px;
+  height: 4px;
 }
 
 .portfolio-scroll::-webkit-scrollbar-track {
-  background: transparent;
+  background: #111;
 }
 
 .portfolio-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.portfolio-scroll::-webkit-scrollbar-thumb:hover {
   background: #fff;
 }
 
-/* ─── Section divider line ──────────────────────────────────────────────── */
-.divider {
-  width: 100%;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-/* ─── Noise overlay (subtle texture) ───────────────────────────────────── */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0.35;
+.portfolio-scroll::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
 }

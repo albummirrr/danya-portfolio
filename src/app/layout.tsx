@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
-import { Press_Start_2P, Space_Mono } from "next/font/google";
+import { Anton, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/components/ui/LenisProvider";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 
-const pressStart2P = Press_Start_2P({
+const anton = Anton({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-press-start",
+  variable: "--font-anton",
   display: "swap",
 });
 
-const spaceMono = Space_Mono({
-  weight: ["400", "700"],
+const spaceGrotesk = Space_Grotesk({
+  weight: ["400", "500"],
   subsets: ["latin"],
-  variable: "--font-space-mono",
+  variable: "--font-grotesk",
   display: "swap",
 });
 
@@ -25,14 +25,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${pressStart2P.variable} ${spaceMono.variable}`}
-    >
+    <html lang="en" className={`${anton.variable} ${spaceGrotesk.variable}`}>
       <body>
         <LenisProvider>
           <CustomCursor />

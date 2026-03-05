@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const HALF = 6; // half of 12px cursor size
+const HALF = 4; // half of 8px
 
 export function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -19,15 +19,11 @@ export function CustomCursor() {
     const onLeave = () => cursor.classList.remove("cursor--hover");
 
     document.addEventListener("mousemove", onMouseMove);
-
-    // Use event delegation instead of querying all elements upfront
     document.addEventListener("mouseover", (e) => {
-      const target = e.target as Element;
-      if (target.closest("a, button, [data-cursor-hover]")) onEnter();
+      if ((e.target as Element).closest("a, button, [data-cursor-hover]")) onEnter();
     });
     document.addEventListener("mouseout", (e) => {
-      const target = e.target as Element;
-      if (target.closest("a, button, [data-cursor-hover]")) onLeave();
+      if ((e.target as Element).closest("a, button, [data-cursor-hover]")) onLeave();
     });
 
     return () => {
