@@ -179,12 +179,27 @@ body {
   animation: bounce-down 1.2s ease-in-out infinite;
 }
 
-/* ─── Horizontal scroll track ───────────────────────────────────────────── */
-.h-scroll-track {
-  display: flex;
-  gap: 1rem;
-  width: max-content;
-  will-change: transform;
+/* ─── Portfolio horizontal scroll lane ──────────────────────────────────── */
+.portfolio-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.portfolio-scroll::-webkit-scrollbar {
+  height: 2px;
+}
+
+.portfolio-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.portfolio-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.portfolio-scroll::-webkit-scrollbar-thumb:hover {
+  background: #fff;
 }
 
 /* ─── Section divider line ──────────────────────────────────────────────── */
@@ -192,40 +207,6 @@ body {
   width: 100%;
   height: 1px;
   background: rgba(255, 255, 255, 0.12);
-}
-
-/* ─── Video card thumbnail/video swap ───────────────────────────────────── */
-.video-card__media {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.video-card__thumb {
-  position: absolute;
-  inset: 0;
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  transition: opacity 0.3s ease;
-}
-
-.video-card__video {
-  position: absolute;
-  inset: 0;
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.video-card:hover .video-card__thumb {
-  opacity: 0;
-}
-
-.video-card:hover .video-card__video {
-  opacity: 1;
 }
 
 /* ─── Noise overlay (subtle texture) ───────────────────────────────────── */

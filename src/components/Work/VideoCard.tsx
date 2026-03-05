@@ -1,79 +1,94 @@
 "use client";
 
 import { useRef } from "react";
-import type { VideoItem } from "@/types";
+import type { Project } from "@/data/projects";
 
 interface Props {
-  video?: VideoItem;
+  project: Project | null;
+  mobile?: boolean;
 }
 
-export function VideoCard({ video }: Props) {
+export function VideoCard({ project, mobile = false }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleMouseEnter = () => {
-    if (videoRef.current && video?.src) {
-      videoRef.current.play().catch(() => {});
-    }
+    const v = videoRef.current;
+    if (!v || !project?.videoUrl) return;
+    v.play().catch(() => {});
   };
 
   const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
+    const v = videoRef.current;
+    if (!v) return;
+    v.pause();
+    v.currentTime = 0;
   };
+
+  const isEmpty = !project || (!project.videoUrl && !project.posterUrl);
 
   return (
     <div
-      className="video-card group flex-shrink-0"
+      className={[
+        "group flex-shrink-0 snap-start",
+        mobile ? "w-full" : "w-[400px]",
+        "transition-transform duration-300 ease-out",
+        "hover:scale-[1.02]",
+      ].join(" ")}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       data-cursor-hover
     >
-      {/* Aspect ratio box */}
-      <div className="relative aspect-video w-56 overflow-hidden bg-white/5 md:w-72 lg:w-80">
-        {video ? (
+      {/* ── Media box ─────────────────────────────────────────────── */}
+      <div
+        className={[
+          "relative overflow-hidden aspect-video",
+          "border transition-colors duration-300",
+          "border-[#333] group-hover:border-white",
+          "bg-white/[0.03]",
+        ].join(" ")}
+      >
+        {isEmpty ? (
+          /* Placeholder */
+          <div className="flex h-full w-full items-center justify-center">
+            <span className="font-mono-custom text-[8px] tracking-[0.3em] opacity-15">
+              COMING SOON
+            </span>
+          </div>
+        ) : (
           <>
-            {/* Thumbnail */}
-            {video.thumbnail && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={video.thumbnail}
-                alt={video.title}
-                className="video-card__thumb"
-                loading="lazy"
-              />
-            )}
-
-            {/* Video (lazy — only rendered when src present) */}
-            {video.src && (
+            {/* Video (underneath) */}
+            {project.videoUrl && (
               <video
                 ref={videoRef}
-                className="video-card__video"
-                src={video.src}
+                src={project.videoUrl}
                 muted
                 loop
                 playsInline
                 preload="none"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            )}
+
+            {/* Poster image (on top, fades out on hover) */}
+            {project.posterUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={project.posterUrl}
+                alt={project.title}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-0"
               />
             )}
           </>
-        ) : (
-          /* Placeholder skeleton */
-          <div className="flex h-full w-full items-center justify-center">
-            <span className="font-mono-custom text-[9px] tracking-widest opacity-20">
-              [ COMING SOON ]
-            </span>
-          </div>
         )}
 
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+        {/* Subtle hover vignette */}
+        <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
       </div>
 
-      {/* Title */}
-      <p className="mt-2 font-mono-custom text-[9px] tracking-widest opacity-60 transition-opacity group-hover:opacity-100">
-        {video?.title ?? "—"}
+      {/* ── Title ─────────────────────────────────────────────────── */}
+      <p className="mt-2 font-mono-custom text-[9px] tracking-[0.25em] text-white/40 transition-colors duration-300 group-hover:text-white/80">
+        {project?.title ?? "—"}
       </p>
     </div>
   );

@@ -1,99 +1,84 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import type { WorkCategory as WorkCategoryType } from "@/types";
+import type { CategoryId, Project } from "@/data/projects";
 import { VideoCard } from "./VideoCard";
 
-gsap.registerPlugin(ScrollTrigger);
-
-/* Placeholder cards shown when category has no videos yet */
-const PLACEHOLDER_COUNT = 4;
-
 interface Props {
-  category: WorkCategoryType;
+  id: CategoryId;
+  label: string;
   index: number;
+  projects: Project[];
 }
 
-export function WorkCategory({ category, index }: Props) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
+const PLACEHOLDER_COUNT = 4;
 
-  /* Horizontal scroll via GSAP on desktop */
+export function WorkCategory({ label, index, projects }: Props) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Convert vertical wheel → horizontal scroll on desktop
   useEffect(() => {
-    const track = trackRef.current;
-    const section = sectionRef.current;
-    if (!track || !section) return;
+    const el = scrollRef.current;
+    if (!el) return;
 
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    if (isMobile) return;
+    const onWheel = (e: WheelEvent) => {
+      // Only hijack if scroll is primarily vertical
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        el.scrollLeft += e.deltaY * 1.2;
+      }
+    };
 
-    const totalScroll = track.scrollWidth - section.offsetWidth;
-
-    const ctx = gsap.context(() => {
-      gsap.to(track, {
-        x: -totalScroll,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${totalScroll}`,
-          pin: true,
-          scrub: 1,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
-    }, section);
-
-    return () => ctx.revert();
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  const videos = category.videos.length > 0 ? category.videos : [];
-  const showPlaceholders = videos.length === 0;
+  const cards = projects.length > 0 ? projects : Array.from<null>({ length: PLACEHOLDER_COUNT }).fill(null);
 
   return (
-    <div
-      ref={sectionRef}
-      className="overflow-hidden border-t border-white/10"
-    >
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-0">
-        {/* Category label — sticky on desktop */}
-        <div className="flex-shrink-0 px-4 pt-6 md:w-64 md:px-8 md:pt-8 lg:w-80">
-          <p className="font-mono-custom text-[9px] tracking-[0.3em] opacity-30">
+    <div className="border-t border-white/10">
+      <div className="flex flex-col md:flex-row md:items-start">
+
+        {/* ── Label column ──────────────────────────────────────────── */}
+        <div className="flex-shrink-0 px-6 pb-2 pt-6 md:w-52 md:py-8 md:px-12 lg:w-60 lg:px-16">
+          <span className="block font-mono-custom text-[9px] tracking-[0.4em] opacity-25">
             {String(index + 1).padStart(2, "0")}
-          </p>
-          <h3 className="mt-2 font-pixel text-[9px] leading-relaxed md:text-[10px] lg:text-xs">
-            {category.title}
+          </span>
+          <h3 className="mt-2 font-pixel text-[8px] leading-[2] tracking-wide md:text-[9px]">
+            {label}
           </h3>
         </div>
 
-        {/* Horizontal scroll area (desktop) / Grid (mobile) */}
-        <div className="flex-1 overflow-x-auto pb-8 pt-4 md:overflow-visible md:pt-8">
-          {/* Mobile: CSS grid */}
-          <div
-            className="grid grid-cols-2 gap-3 px-4 md:hidden"
-          >
-            {showPlaceholders
-              ? Array.from({ length: PLACEHOLDER_COUNT }).map((_, i) => (
-                  <VideoCard key={i} />
-                ))
-              : videos.map((v) => <VideoCard key={v.id} video={v} />)}
-          </div>
-
-          {/* Desktop: GSAP horizontal track */}
-          <div
-            ref={trackRef}
-            className="h-scroll-track hidden pl-4 md:flex md:pl-0"
-          >
-            {showPlaceholders
-              ? Array.from({ length: PLACEHOLDER_COUNT }).map((_, i) => (
-                  <VideoCard key={i} />
-                ))
-              : videos.map((v) => <VideoCard key={v.id} video={v} />)}
-          </div>
+        {/* ── Mobile: 2-column grid ─────────────────────────────────── */}
+        <div className="grid grid-cols-2 gap-2 px-6 pb-6 md:hidden">
+          {cards.map((project, i) => (
+            <VideoCard
+              key={(project as Project | null)?.id ?? `ph-${i}`}
+              project={project as Project | null}
+              mobile
+            />
+          ))}
         </div>
+
+        {/* ── Desktop: horizontal scroll lane ───────────────────────── */}
+        <div
+          ref={scrollRef}
+          className="portfolio-scroll hidden flex-1 snap-x snap-mandatory gap-3 overflow-x-auto pb-8 pt-6 md:flex"
+        >
+          {/* Left padding spacer */}
+          <div className="flex-shrink-0 w-1" aria-hidden="true" />
+
+          {cards.map((project, i) => (
+            <VideoCard
+              key={(project as Project | null)?.id ?? `ph-${i}`}
+              project={project as Project | null}
+            />
+          ))}
+
+          {/* Right padding spacer */}
+          <div className="flex-shrink-0 w-6" aria-hidden="true" />
+        </div>
+
       </div>
     </div>
   );
