@@ -1,65 +1,100 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
 import { HeroAscii } from "./HeroAscii";
 import { ScrollIndicator } from "@/components/ui/ScrollIndicator";
 
+/* ── Glitch scramble config ─────────────────────────────────────────────── */
+const GLITCH_CHARS = "!<>-_\\/[]{}=+*^?#░▒▓█▄▌▐▀$@%&";
+const LINE1 = "DANYA";
+const LINE2 = "MIRZOEV";
+const TOTAL_FRAMES = 75; // ~1.25s @ 60fps
+const LINE2_DELAY = 12;  // frames before line 2 starts resolving
+
+function scrambleLine(real: string, revealed: number): string {
+  return real
+    .split("")
+    .map((char, i) =>
+      i < revealed
+        ? char
+        : GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+    )
+    .join("");
+}
+
 export function Hero() {
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const containerRef = useRef<HTMLElement>(null);
+  const line1Ref = useRef<HTMLSpanElement>(null);
+  const line2Ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+    const l1 = line1Ref.current;
+    const l2 = line2Ref.current;
+    if (!l1 || !l2) return;
 
-      tl.fromTo(
-        titleRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, delay: 0.3 }
-      ).fromTo(
-        subtitleRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.6 },
-        "-=0.3"
+    let frame = 0;
+    let rafId: number;
+
+    const animate = () => {
+      frame++;
+
+      // Line 1: reveals over first ~80% of TOTAL_FRAMES
+      const l1Revealed = Math.min(
+        LINE1.length,
+        Math.floor((frame / TOTAL_FRAMES) * LINE1.length * 1.4)
       );
-    }, containerRef);
+      l1.textContent = scrambleLine(LINE1, l1Revealed);
 
-    return () => ctx.revert();
+      // Line 2: starts after LINE2_DELAY frames
+      const l2Frame = Math.max(0, frame - LINE2_DELAY);
+      const l2Revealed = Math.min(
+        LINE2.length,
+        Math.floor((l2Frame / TOTAL_FRAMES) * LINE2.length * 1.4)
+      );
+      l2.textContent = scrambleLine(LINE2, l2Revealed);
+
+      if (frame < TOTAL_FRAMES + LINE2_DELAY) {
+        rafId = requestAnimationFrame(animate);
+      } else {
+        // Lock to final text
+        l1.textContent = LINE1;
+        l2.textContent = LINE2;
+      }
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
   return (
-    <section
-      ref={containerRef}
-      className="relative flex min-h-screen flex-col items-start justify-center overflow-hidden px-4 md:px-8"
-    >
-      {/* Background ASCII art */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-        <HeroAscii />
-      </div>
+    <section className="relative flex h-screen flex-col items-start justify-center overflow-hidden px-6 md:px-12 lg:px-16">
+      {/* Background ASCII pattern */}
+      <HeroAscii />
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col gap-6">
+      {/* Main content */}
+      <div className="relative z-10 flex flex-col gap-8">
+        {/* Name — ~40px mobile, ~120px desktop */}
         <h1
-          ref={titleRef}
-          className="glitch font-pixel text-3xl leading-tight tracking-tight opacity-0 md:text-5xl lg:text-7xl"
-          data-text="DANYA MIRZOEV"
+          className="font-pixel leading-[1.15] tracking-tight"
+          style={{ fontSize: "clamp(38px, 8.5vw, 120px)" }}
         >
-          DANYA
-          <br />
-          MIRZOEV
+          <span ref={line1Ref} className="block">
+            {LINE1}
+          </span>
+          <span ref={line2Ref} className="block">
+            {LINE2}
+          </span>
         </h1>
 
+        {/* Subtitle */}
         <p
-          ref={subtitleRef}
-          className="font-mono-custom text-xs tracking-[0.3em] opacity-0 md:text-sm"
+          className="font-mono-custom tracking-[0.25em] opacity-50"
+          style={{ fontSize: "clamp(9px, 1.1vw, 13px)" }}
         >
-          MULTIDISCIPLINARY DESIGNER & DIRECTOR
+          MULTIDISCIPLINARY DESIGNER &amp; DIRECTOR
         </p>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — pinned bottom centre */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
         <ScrollIndicator />
       </div>
